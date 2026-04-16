@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
-os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 from config import MODEL_PATH, INPUT_PATH, OUTPUT_PATH, PROMPT, SKIP_REPEAT, MAX_CONCURRENCY, NUM_WORKERS, CROP_MODE
@@ -36,7 +36,7 @@ llm = LLM(
     trust_remote_code=True, 
     max_model_len=8192,
     max_num_seqs=MAX_CONCURRENCY,
-    tensor_parallel_size=2,
+    tensor_parallel_size=1,
     gpu_memory_utilization=0.9,
 )
 

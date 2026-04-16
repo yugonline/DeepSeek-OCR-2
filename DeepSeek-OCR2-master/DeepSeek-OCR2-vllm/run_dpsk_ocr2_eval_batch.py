@@ -54,7 +54,6 @@ llm = LLM(
     enforce_eager=False,
     trust_remote_code=True, 
     max_model_len=8192,
-    swap_space=0,
     max_num_seqs = MAX_CONCURRENCY,
     tensor_parallel_size=1,
     gpu_memory_utilization=0.7,

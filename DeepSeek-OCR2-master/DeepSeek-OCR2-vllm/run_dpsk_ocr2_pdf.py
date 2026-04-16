@@ -10,8 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
-os.environ['VLLM_USE_V1'] = '0'
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0,1'
 
 
 from config import MODEL_PATH, INPUT_PATH, OUTPUT_PATH, PROMPT, SKIP_REPEAT, MAX_CONCURRENCY, NUM_WORKERS, CROP_MODE
@@ -36,19 +35,17 @@ llm = LLM(
     enforce_eager=False,
     trust_remote_code=True, 
     max_model_len=8192,
-    swap_space=0,
     max_num_seqs=MAX_CONCURRENCY,
-    tensor_parallel_size=1,
+    tensor_parallel_size=2,
     gpu_memory_utilization=0.9,
-    disable_mm_preprocessor_cache=True
 )
 
-logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=20, window_size=50, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
-
+# Note: custom logits_processors not supported in vllm V1 engine.
+# Using repetition_penalty as a substitute for NoRepeatNGramLogitsProcessor.
 sampling_params = SamplingParams(
     temperature=0.0,
     max_tokens=8192,
-    logits_processors=logits_processors,
+    repetition_penalty=1.1,
     skip_special_tokens=False,
     include_stop_str_in_output=True,
 )
